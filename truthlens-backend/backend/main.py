@@ -38,7 +38,7 @@ with open(FRAUD_WATCH_PATH) as f:
 # --- Claude client ---
 # Requires ANTHROPIC_API_KEY set in the environment. Do not hardcode a key here.
 claude_client = anthropic.Anthropic() if os.environ.get("ANTHROPIC_API_KEY") else None
-CLAUDE_MODEL = "claude-sonnet-4-6"
+CLAUDE_MODEL = "claude-sonnet-5"
 
 
 class AnalyzeRequest(BaseModel):

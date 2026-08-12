@@ -1,19 +1,19 @@
 # TruthLens — Build Brief
 
 A misinformation & scam-content analyzer with a "Fraud Watch" awareness hub.
-Built for: ML Empowerment Build Challenge 2.0 (Devpost) — deadline Aug 15, 2026, 9:45am GMT+3.
+Built for: ML Empowerment Build Challenge 2.0 (Devpost) 
 
 ## 1. Concept
 
-TruthLens is not a chatbot. It's a two-page web app:
+TruthLens is not a chatbot. It's a web application with 2 specific functionalities:
 - **Analyzer**: paste text or upload an image → get a structured verdict card (risk score,
   confidence, explanation, stated limitations, recommended next steps).
 - **Fraud Watch**: a browsable, categorized hub of current scam/misinformation tactics with
   red flags and prevention tips — the "return and share" feature that turns this from a
   one-off tool into something with lasting value.
 
-The core technical thesis: a trained ML classifier gives fast, evidence-backed pattern
-detection, but is narrow (it's only as good as its training distribution). An LLM reasoning
+The core technical bit: a trained Machine Learning classifier gives fast, evidence-backed pattern
+detection. An LLM reasoning
 layer sits on top to catch what the classifier misses, and — critically — states its own
 confidence and limitations rather than presenting a false sense of certainty. This
 reconciliation between two independent signals (not just "ask an LLM") is the differentiator.
@@ -106,7 +106,7 @@ scams, tech-support scams, tax/government impersonation scams.
 
 ## 9. Build order
 
-1. ✅ Classifier trained and validated
+1.  Classifier trained and validated
 2. Backend: FastAPI skeleton + `/analyze` (ML + Claude integration)
 3. Backend: `/fraud-watch` + seed content (8–10 entries)
 4. Frontend: Analyzer page wired to backend
