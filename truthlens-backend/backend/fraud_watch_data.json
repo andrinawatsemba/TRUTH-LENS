@@ -1,0 +1,148 @@
+{
+  "categories": [
+    { "id": "ai-deepfake", "name": "AI & deepfakes" },
+    { "id": "impersonation", "name": "Impersonation" },
+    { "id": "relationship", "name": "Relationship & social" },
+    { "id": "money", "name": "Money & investing" },
+    { "id": "employment", "name": "Jobs & income" },
+    { "id": "shopping", "name": "Shopping & delivery" }
+  ],
+  "entries": [
+    {
+      "id": "voice-cloning",
+      "category_id": "ai-deepfake",
+      "title": "AI voice cloning calls",
+      "summary": "A caller uses a short AI-cloned audio sample of a family member's voice, often built from a few seconds of social media video, to fake an emergency and pressure you into sending money fast.",
+      "red_flags": [
+        "Urgent request for money from a 'relative' who sounds slightly off or won't video call",
+        "Caller insists you keep it secret from other family members",
+        "Pressure to pay immediately via gift cards, crypto, or wire transfer"
+      ],
+      "prevention_tips": [
+        "Hang up and call the person back on a number you already have saved",
+        "Agree on a family verification phrase nobody else would know",
+        "Never send money based on a call alone, verify through a second channel"
+      ],
+      "last_updated": "2026-08"
+    },
+    {
+      "id": "deepfake-video",
+      "category_id": "ai-deepfake",
+      "title": "Deepfake video scams",
+      "summary": "Fabricated video of a public figure, executive, or official is used to promote a fake investment, fake news story, or fraudulent authorization on a video call.",
+      "red_flags": [
+        "Unnatural blinking, lighting, or lip-sync in the video",
+        "The video pushes you toward an urgent financial decision",
+        "It appears only on an unofficial account or unfamiliar link"
+      ],
+      "prevention_tips": [
+        "Check whether the same claim appears on the person's or company's verified official channels",
+        "Search for the video or claim alongside the word 'scam' or 'fake'",
+        "Treat any investment 'endorsement' from a video with real skepticism"
+      ],
+      "last_updated": "2026-08"
+    },
+    {
+      "id": "toll-gov-impersonation",
+      "category_id": "impersonation",
+      "title": "Fake toll & government texts",
+      "summary": "Government and bank impersonation remains the most reported scam category. A common current version is a text claiming you owe an unpaid toll or fee, threatening late charges or registration suspension.",
+      "red_flags": [
+        "Text about an unpaid toll, fine, or fee with a link to 'pay now'",
+        "Claims to be from police, tax authorities, or a benefits agency",
+        "Creates urgency with threats of legal action or account suspension"
+      ],
+      "prevention_tips": [
+        "Go directly to the agency's official site or app instead of clicking the link",
+        "Real government agencies rarely demand instant payment by text",
+        "Report suspicious texts to your carrier or local consumer protection agency"
+      ],
+      "last_updated": "2026-08"
+    },
+    {
+      "id": "romance",
+      "category_id": "relationship",
+      "title": "Romance scams",
+      "summary": "An online relationship, often built over weeks on a dating app or social media, is used to eventually ask for money for an emergency, travel costs, or a shared investment opportunity.",
+      "red_flags": [
+        "Professes strong feelings quickly, avoids video calls or meeting in person",
+        "Has a story involving travel, military deployment, or overseas work",
+        "Eventually introduces a financial emergency or investment 'opportunity'"
+      ],
+      "prevention_tips": [
+        "Reverse-image-search their profile photo",
+        "Never send money or gift cards to someone you haven't met in person",
+        "Talk to a friend or family member before sending money to an online contact"
+      ],
+      "last_updated": "2026-08"
+    },
+    {
+      "id": "investment",
+      "category_id": "money",
+      "title": "Investment & crypto scams",
+      "summary": "Promises of guaranteed high returns, often tied to crypto, AI-themed funds, or real estate, pressure victims to invest quickly. This category causes the largest reported financial losses of any scam type.",
+      "red_flags": [
+        "Guaranteed or unusually high returns with 'low risk'",
+        "Pressure to act immediately before a limited window closes",
+        "Unregistered platforms or advisors you can't independently verify"
+      ],
+      "prevention_tips": [
+        "Verify any advisor or platform through an official financial regulator",
+        "Be skeptical of any 'guaranteed return' claim, legitimate investing carries risk",
+        "Slow down, real opportunities don't disappear if you take a day to check"
+      ],
+      "last_updated": "2026-08"
+    },
+    {
+      "id": "payment-pressure",
+      "category_id": "money",
+      "title": "Gift card & instant payment pressure",
+      "summary": "Regardless of the story, scammers converge on the same demand: pay through gift cards, cryptocurrency, wire transfer, or a peer-to-peer app, since these are hard to trace or reverse.",
+      "red_flags": [
+        "Insists gift cards or crypto are the only accepted payment",
+        "Asks you to read out gift card codes over the phone",
+        "Claims a mistaken payment on a peer-to-peer app and asks you to send it back"
+      ],
+      "prevention_tips": [
+        "No legitimate agency or business asks to be paid in gift cards",
+        "Confirm any 'mistaken payment' claim directly with your bank first",
+        "Pause before any payment method feels unusually specific or urgent"
+      ],
+      "last_updated": "2026-08"
+    },
+    {
+      "id": "job-scam",
+      "category_id": "employment",
+      "title": "Fake job offers",
+      "summary": "A job offer, often unsolicited over text or social media, requires little effort, promises high pay, and eventually asks for personal information, a fee, or check-cashing that leaves the victim liable.",
+      "red_flags": [
+        "You're hired without an interview or with a very short one",
+        "Asked to pay for training, equipment, or a background check upfront",
+        "Involves depositing a check and forwarding part of the funds elsewhere"
+      ],
+      "prevention_tips": [
+        "Research the company independently, don't rely only on the recruiter's links",
+        "Legitimate employers never ask you to pay them to get hired",
+        "Never deposit and forward funds from an unfamiliar check"
+      ],
+      "last_updated": "2026-08"
+    },
+    {
+      "id": "social-shopping",
+      "category_id": "shopping",
+      "title": "Social media shopping scams",
+      "summary": "Ads on social platforms offer expensive items at steep discounts. Shopping scams are now the most commonly reported scam type originating on social media.",
+      "red_flags": [
+        "Prices far below market rate with a countdown timer",
+        "Store has no reviews, or only recently created social accounts",
+        "Checkout redirects to an unfamiliar payment page"
+      ],
+      "prevention_tips": [
+        "Search the store name alongside 'reviews' or 'scam' before buying",
+        "Use a credit card, not a direct bank transfer, for purchase protection",
+        "Be wary of ads that only appear on social feeds with no real storefront"
+      ],
+      "last_updated": "2026-08"
+    }
+  ]
+}
