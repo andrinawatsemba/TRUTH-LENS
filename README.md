@@ -6,7 +6,7 @@ Built for the ML Empowerment Build Challenge 2.0.
 ## What's here
 
 - `backend/` — FastAPI service: trained scam classifier (97.9% validation accuracy)
-  + Claude API reasoning layer + Fraud Watch content
+  + Gemini API reasoning layer + Fraud Watch content
 - `frontend/` — React + Vite + Tailwind app: Analyzer page + Fraud Watch page
 - `BUILD_BRIEF.md` — full architecture, API contracts, and submission notes
 - `train_baseline.py` — the script that trained the classifier (for reference/re-training)
@@ -18,10 +18,10 @@ Built for the ML Empowerment Build Challenge 2.0.
 cd backend
 python3 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # then add your ANTHROPIC_API_KEY
+cp .env.example .env   # then add your GEMINI_API_KEY
 uvicorn main:app --reload
 ```
-Runs at http://localhost:8000. Check http://localhost:8000/health — `claude_configured`
+Runs at http://localhost:8000. Check http://localhost:8000/health — `gemini_configured`
 should say `true` once your key is set.
 
 ### Frontend
@@ -39,7 +39,7 @@ Runs at http://localhost:5173, calls the backend at http://localhost:8000 by def
 during a live demo):
 1. Push this repo to GitHub
 2. New Railway project → deploy from GitHub → select `backend/` as root
-3. Set env vars: `ANTHROPIC_API_KEY`, `FRONTEND_ORIGIN` (your Vercel URL once you have it)
+3. Set env vars: `GEMINI_API_KEY`, `FRONTEND_ORIGIN` (your Vercel URL once you have it)
 4. Railway auto-detects the `Procfile`
 
 **Frontend → Vercel**:
@@ -50,7 +50,8 @@ during a live demo):
 ## Before you demo
 
 - The LLM reasoning layer (`/analyze`) has NOT been tested end-to-end yet — I don't have
-  an Anthropic API key in this sandbox. Set your key locally and test a few real examples
-  before you rely on it for the demo or recording.
+  a Gemini API key in this sandbox. Set your key locally (free via Google AI Studio, no
+  card required) and test a few real examples before you rely on it for the demo or
+  recording.
 - Try at least one case where you'd expect the ML classifier and the LLM to disagree
   (see the fake-news example in BUILD_BRIEF.md) — that's your strongest pitch moment.

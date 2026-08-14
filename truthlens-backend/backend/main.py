@@ -4,10 +4,11 @@ import os
 from pathlib import Path
 from typing import Literal, Optional
 
-import anthropic
 import joblib
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from google import genai
+from google.genai import types
 from pydantic import BaseModel
 
 APP_DIR = Path(__file__).parent
@@ -35,10 +36,12 @@ vectorizer = joblib.load(VECTORIZER_PATH)
 with open(FRAUD_WATCH_PATH) as f:
     fraud_watch_content = json.load(f)
 
-# --- Claude client ---
-# Requires ANTHROPIC_API_KEY set in the environment. Do not hardcode a key here.
-claude_client = anthropic.Anthropic() if os.environ.get("ANTHROPIC_API_KEY") else None
-CLAUDE_MODEL = "claude-sonnet-5"
+# --- Gemini client ---
+# Requires GEMINI_API_KEY set in the environment (free via Google AI Studio,
+# no card required). Do not hardcode a key here.
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
+gemini_client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
+GEMINI_MODEL = "gemini-2.5-flash"
 
 
 class AnalyzeRequest(BaseModel):
@@ -95,40 +98,36 @@ def run_ml_classifier(text: str) -> tuple[str, float]:
 
 def run_llm_reasoning(text: str, ml_verdict: str, ml_confidence: float,
                        image_base64: Optional[str], image_media_type: str) -> dict:
-    if claude_client is None:
+    if gemini_client is None:
         raise HTTPException(
             status_code=503,
-            detail="ANTHROPIC_API_KEY is not configured on the server.",
+            detail="GEMINI_API_KEY is not configured on the server.",
         )
 
-    user_content = [
-        {
-            "type": "text",
-            "text": (
-                f"ML classifier verdict: {ml_verdict} (confidence: {ml_confidence:.2f})\n\n"
-                f"Content to analyze:\n{text}"
-            ),
-        }
+    contents = [
+        f"ML classifier verdict: {ml_verdict} (confidence: {ml_confidence:.2f})\n\n"
+        f"Content to analyze:\n{text}"
     ]
     if image_base64:
-        user_content.insert(0, {
-            "type": "image",
-            "source": {
-                "type": "base64",
-                "media_type": image_media_type,
-                "data": image_base64,
-            },
-        })
+        contents.append(
+            types.Part.from_bytes(
+                data=base64.b64decode(image_base64),
+                mime_type=image_media_type,
+            )
+        )
 
-    response = claude_client.messages.create(
-        model=CLAUDE_MODEL,
-        max_tokens=600,
-        system=REASONING_SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": user_content}],
+    response = gemini_client.models.generate_content(
+        model=GEMINI_MODEL,
+        contents=contents,
+        config=types.GenerateContentConfig(
+            system_instruction=REASONING_SYSTEM_PROMPT,
+            response_mime_type="application/json",
+            max_output_tokens=600,
+        ),
     )
 
-    raw = response.content[0].text.strip()
-    # Strip accidental code fences if the model adds them
+    raw = (response.text or "").strip()
+    # Strip accidental code fences just in case
     raw = raw.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
     try:
         return json.loads(raw)
@@ -164,4 +163,4 @@ def fraud_watch():
 
 @app.get("/health")
 def health():
-    return {"status": "ok", "claude_configured": claude_client is not None}
+    return {"status": "ok", "gemini_configured": gemini_client is not None}
