@@ -35,8 +35,7 @@ Runs at http://localhost:5173, calls the backend at http://localhost:8000 by def
 
 ## Deploy
 
-**Backend → Railway** (preferred over Render's free tier to avoid cold-start delays
-during a live demo):
+**Backend → Render** 
 1. Push this repo to GitHub
 2. New Railway project → deploy from GitHub → select `backend/` as root
 3. Set env vars: `GEMINI_API_KEY`, `FRONTEND_ORIGIN` (your Vercel URL once you have it)
@@ -46,12 +45,3 @@ during a live demo):
 1. New Vercel project → import the repo → set root directory to `frontend/`
 2. Set env var: `VITE_API_URL` = your Railway backend URL
 3. Deploy
-
-## Before you demo
-
-- The LLM reasoning layer (`/analyze`) has NOT been tested end-to-end yet — I don't have
-  a Gemini API key in this sandbox. Set your key locally (free via Google AI Studio, no
-  card required) and test a few real examples before you rely on it for the demo or
-  recording.
-- Try at least one case where you'd expect the ML classifier and the LLM to disagree
-  (see the fake-news example in BUILD_BRIEF.md) — that's your strongest pitch moment.

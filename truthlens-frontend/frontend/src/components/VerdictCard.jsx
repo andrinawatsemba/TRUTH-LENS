@@ -8,9 +8,21 @@ const VERDICT_STYLES = {
 
 export default function VerdictCard({ result }) {
   const style = VERDICT_STYLES[result.llm_verdict] || VERDICT_STYLES.uncertain;
+  const isFallback = result.reasoning_source === "ml_only";
 
   return (
     <div className={`border-2 ${style.border} rounded-2xl p-6 md:p-8 bg-white`}>
+      {isFallback && (
+        <div className="mb-5 flex items-start gap-2 bg-caution-bg border border-caution/30 rounded-lg px-3 py-2.5">
+          <span className="text-caution mt-0.5">⚠</span>
+          <p className="text-xs text-caution leading-relaxed">
+            <span className="font-medium">Reasoning layer unavailable right now.</span> This
+            result is based on the pattern classifier alone — narrower than TruthLens's usual
+            analysis. Try again shortly for a full reasoning pass.
+          </p>
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row gap-6 md:items-start">
         <FocusRing confidence={result.llm_confidence} verdict={result.llm_verdict} />
 

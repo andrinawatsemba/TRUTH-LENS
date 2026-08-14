@@ -5,11 +5,15 @@ from pathlib import Path
 from typing import Literal, Optional
 
 import joblib
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from google import genai
 from google.genai import types
 from pydantic import BaseModel
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
+
+load_dotenv()
 
 APP_DIR = Path(__file__).parent
 MODEL_PATH = APP_DIR / "models" / "model.joblib"
@@ -41,7 +45,10 @@ with open(FRAUD_WATCH_PATH) as f:
 # no card required). Do not hardcode a key here.
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 gemini_client = genai.Client(api_key=GEMINI_API_KEY) if GEMINI_API_KEY else None
-GEMINI_MODEL = "gemini-2.5-flash"
+# Gemini model IDs get deprecated/rotated frequently. Override via GEMINI_MODEL
+# in .env if this default ever 404s — check aistudio.google.com, pick a model,
+# click "Get code", and copy the exact model= string shown there.
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.6-flash")
 
 
 class AnalyzeRequest(BaseModel):
@@ -58,6 +65,7 @@ class AnalyzeResponse(BaseModel):
     explanation: str
     limitations: str
     recommended_actions: list[str]
+    reasoning_source: Literal["llm", "ml_only"] = "llm"
 
 
 REASONING_SYSTEM_PROMPT = """You are the reasoning layer of TruthLens, a scam and \
@@ -96,6 +104,18 @@ def run_ml_classifier(text: str) -> tuple[str, float]:
     return verdict, confidence
 
 
+@retry(
+    retry=retry_if_exception_type(genai.errors.ServerError),
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=2, max=8),
+    reraise=True,
+)
+def _call_gemini(contents, config):
+    return gemini_client.models.generate_content(
+        model=GEMINI_MODEL, contents=contents, config=config
+    )
+
+
 def run_llm_reasoning(text: str, ml_verdict: str, ml_confidence: float,
                        image_base64: Optional[str], image_media_type: str) -> dict:
     if gemini_client is None:
@@ -116,23 +136,65 @@ def run_llm_reasoning(text: str, ml_verdict: str, ml_confidence: float,
             )
         )
 
-    response = gemini_client.models.generate_content(
-        model=GEMINI_MODEL,
-        contents=contents,
-        config=types.GenerateContentConfig(
-            system_instruction=REASONING_SYSTEM_PROMPT,
-            response_mime_type="application/json",
-            max_output_tokens=600,
-        ),
+    config = types.GenerateContentConfig(
+        system_instruction=REASONING_SYSTEM_PROMPT,
+        response_mime_type="application/json",
+        max_output_tokens=3072,
     )
 
+    try:
+        response = _call_gemini(contents, config)
+    except genai.errors.APIError as e:
+        # Retries (if applicable) are already exhausted by this point.
+        raise HTTPException(status_code=502, detail=f"Gemini API error: {e}")
+
     raw = (response.text or "").strip()
+    if not raw:
+        raise HTTPException(
+            status_code=502,
+            detail="Gemini returned an empty response (it may have used its full "
+                   "token budget on internal reasoning). Try again.",
+        )
     # Strip accidental code fences just in case
     raw = raw.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
     try:
         return json.loads(raw)
     except json.JSONDecodeError:
-        raise HTTPException(status_code=502, detail="Could not parse reasoning layer output.")
+        raise HTTPException(
+            status_code=502,
+            detail=f"Could not parse reasoning layer output. Raw response: {raw[:300]}",
+        )
+
+
+def build_fallback_result(ml_verdict: str, ml_confidence: float) -> dict:
+    """Used when the LLM reasoning layer is unavailable for any reason. Never
+    claims 'likely_safe' on its own — without independent reasoning, the
+    honest stance is 'high_risk' or 'uncertain', never a confident all-clear.
+    """
+    llm_verdict = "high_risk" if ml_verdict == "phishing" else "uncertain"
+    return {
+        "llm_verdict": llm_verdict,
+        "llm_confidence": ml_confidence,
+        "explanation": (
+            "The AI reasoning layer is temporarily unavailable, so this result is "
+            f"based only on the pattern-matching classifier, which flagged this "
+            f"content as '{ml_verdict}' with {ml_confidence:.0%} confidence. This is "
+            "a narrower signal than TruthLens normally provides."
+        ),
+        "limitations": (
+            "This fallback result has not been independently reasoned over. It "
+            "reflects statistical text patterns only and is known to be less "
+            "reliable on content like general misinformation, which falls outside "
+            "typical scam/phishing wording. Treat it as a starting signal, not a "
+            "final verdict."
+        ),
+        "recommended_actions": [
+            "Don't click links, share personal info, or send money based on this alone.",
+            "Try analyzing again shortly — the reasoning layer may recover.",
+            "When in doubt, verify directly with the sender or organization through "
+            "a separate, trusted channel.",
+        ],
+    }
 
 
 @app.post("/analyze", response_model=AnalyzeResponse)
@@ -141,9 +203,18 @@ def analyze(req: AnalyzeRequest):
         raise HTTPException(status_code=400, detail="text field is required.")
 
     ml_verdict, ml_confidence = run_ml_classifier(req.text)
-    llm_result = run_llm_reasoning(
-        req.text, ml_verdict, ml_confidence, req.image_base64, req.image_media_type
-    )
+
+    reasoning_source = "llm"
+    try:
+        llm_result = run_llm_reasoning(
+            req.text, ml_verdict, ml_confidence, req.image_base64, req.image_media_type
+        )
+    except Exception:
+        # The reasoning layer failed for any reason (missing key, Gemini outage,
+        # bad model ID, malformed output, etc). Never surface a broken error to
+        # the user — fall back to an honest, classifier-only result instead.
+        llm_result = build_fallback_result(ml_verdict, ml_confidence)
+        reasoning_source = "ml_only"
 
     return AnalyzeResponse(
         ml_verdict=ml_verdict,
@@ -153,6 +224,7 @@ def analyze(req: AnalyzeRequest):
         explanation=llm_result["explanation"],
         limitations=llm_result["limitations"],
         recommended_actions=llm_result["recommended_actions"],
+        reasoning_source=reasoning_source,
     )
 
 
