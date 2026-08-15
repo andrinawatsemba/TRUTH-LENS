@@ -49,19 +49,17 @@ export default function Analyzer() {
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-14">
-      <div className="text-center mb-10">
-        <div className="flex justify-center mb-5">
-          <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden ring-4 ring-white shadow-sm">
-            <img src={fraudHeroImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-lens/35 mix-blend-multiply" />
-          </div>
+      <div className="relative rounded-2xl overflow-hidden mb-10 h-56 md:h-64">
+        <img src={fraudHeroImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/70 to-lens/40" />
+        <div className="absolute inset-0 flex flex-col items-center justify-end text-center p-6 md:p-8">
+          <h1 className="font-display text-4xl md:text-5xl font-semibold tracking-tight text-paper">
+            Bring the claim into focus
+          </h1>
+          <p className="mt-3 text-paper/80 max-w-xl">
+            Verify suspicious messages instantly and learn to spot the next scam.
+          </p>
         </div>
-        <h1 className="font-display text-4xl md:text-5xl font-semibold tracking-tight text-ink">
-          Bring the claim into focus
-        </h1>
-        <p className="mt-3 text-ink/60 max-w-xl mx-auto">
-          Verify suspicious messages instantly and learn to spot the next scam.
-        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
