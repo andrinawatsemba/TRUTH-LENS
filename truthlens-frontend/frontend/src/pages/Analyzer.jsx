@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { analyze, fileToBase64 } from "../api.js";
 import VerdictCard from "../components/VerdictCard.jsx";
+import fraudHeroImg from "../assets/fraud-hero.jpg";
 
 export default function Analyzer() {
   const [text, setText] = useState("");
@@ -49,13 +50,17 @@ export default function Analyzer() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-14">
       <div className="text-center mb-10">
+        <div className="flex justify-center mb-5">
+          <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full overflow-hidden ring-4 ring-white shadow-sm">
+            <img src={fraudHeroImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-lens/35 mix-blend-multiply" />
+          </div>
+        </div>
         <h1 className="font-display text-4xl md:text-5xl font-semibold tracking-tight text-ink">
           Bring the claim into focus
         </h1>
         <p className="mt-3 text-ink/60 max-w-xl mx-auto">
-          Paste a suspicious message, email, or claim below. TruthLens checks it against a
-          trained scam-pattern classifier and an independent reasoning pass, then tells you
-          honestly how confident it is.
+          Verify suspicious messages instantly and learn to spot the next scam.
         </p>
       </div>
 

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { getFraudWatch } from "../api.js";
+import scamAlertImg from "../assets/scam-alert.jpg";
 
 export default function FraudWatch() {
   const [data, setData] = useState(null);
@@ -25,12 +26,18 @@ export default function FraudWatch() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-14">
-      <div className="mb-8">
-        <h1 className="font-display text-4xl font-semibold tracking-tight text-ink">Fraud Watch</h1>
-        <p className="mt-2 text-ink/60 max-w-xl">
-          Current scam and manipulation tactics, kept current so you can recognize them before
-          they reach you.
-        </p>
+      <div className="relative rounded-2xl overflow-hidden mb-8 h-52 md:h-60">
+        <img src={scamAlertImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/75 to-lens/50" />
+        <div className="absolute inset-0 flex flex-col justify-end p-6 md:p-8">
+          <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight text-paper">
+            Fraud Watch
+          </h1>
+          <p className="mt-2 text-paper/80 max-w-xl">
+            Current scam and manipulation tactics, kept current so you can recognize them before
+            they reach you.
+          </p>
+        </div>
       </div>
 
       {error && <p className="text-risk text-sm">{error}</p>}
